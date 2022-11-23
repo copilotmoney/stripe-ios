@@ -24,6 +24,8 @@ final class CardSectionWithScannerView: UIView {
     lazy var cardScanButton: UIButton = {
         let button = UIButton.makeCardScanButton(theme: theme)
         button.addTarget(self, action: #selector(didTapCardScanButton), for: .touchUpInside)
+        // COPILOT: Removing the scan card button.
+        button.isHidden = true
         return button
     }()
     lazy var cardScanningView: CardScanningView = {
@@ -35,7 +37,7 @@ final class CardSectionWithScannerView: UIView {
     }()
     weak var delegate: CardSectionWithScannerViewDelegate?
     private let theme: ElementsUITheme
-    
+
     init(cardSectionView: UIView, delegate: CardSectionWithScannerViewDelegate, theme: ElementsUITheme = .default) {
         self.cardSectionView = cardSectionView
         self.delegate = delegate
@@ -43,28 +45,28 @@ final class CardSectionWithScannerView: UIView {
         super.init(frame: .zero)
         installConstraints()
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
     fileprivate func installConstraints() {
         let sectionTitle = ElementsUI.makeSectionTitleLabel(theme: theme)
         sectionTitle.text = String.Localized.card_information
         let cardSectionTitleAndButton = UIStackView(arrangedSubviews: [sectionTitle, cardScanButton])
-        
+
         let stack = UIStackView(arrangedSubviews: [cardSectionTitleAndButton, cardSectionView, cardScanningView])
         stack.axis = .vertical
         stack.spacing = ElementsUI.sectionSpacing
         stack.setCustomSpacing(ElementsUI.formSpacing, after: cardSectionView)
         addAndPinSubview(stack)
     }
-    
+
     @available(iOS 13, macCatalyst 14, *)
     @objc func didTapCardScanButton() {
         setCardScanVisible(true)
         cardScanningView.start()
         becomeFirstResponder()
     }
-    
+
     private func setCardScanVisible(_ isCardScanVisible: Bool) {
         UIView.animate(withDuration: PaymentSheetUI.defaultAnimationDuration) {
             self.cardScanButton.alpha = isCardScanVisible ? 0 : 1
@@ -72,11 +74,11 @@ final class CardSectionWithScannerView: UIView {
             self.cardScanningView.alpha = isCardScanVisible ? 1 : 0
         }
     }
-    
+
     override var canBecomeFirstResponder: Bool {
         return true
     }
-    
+
     override func resignFirstResponder() -> Bool {
         cardScanningView.stop()
         return super.resignFirstResponder()
